@@ -16,7 +16,7 @@ router.get('/:userId', isAuthenticated, (req, res, next) => {
     })
     .catch((error) => {
       console.log('Error while retrieving user ==>', error);
-      res.status(500).send({ error: 'Failed to retrieve user' });
+      res.status(500).json({ error: 'Failed to retrieve user' });
     });
 });
 
@@ -27,11 +27,11 @@ router.put('/:userId', isAuthenticated, (req, res, next) => {
   User.findByIdAndUpdate(userId, req.body, { new: true })
     .then((updatedUser) => {
       console.log('Updated user ===> ', updatedUser);
-      res.status(200).send(updatedUser);
+      res.status(200).json(updatedUser);
     })
     .catch((error) => {
       console.error('Error while updating user ===> ', error);
-      res.status(500).send({ error: 'Failed to update user' });
+      res.status(500).json({ error: 'Failed to update user' });
     });
 });
 
@@ -46,7 +46,7 @@ router.delete('/:userId', isAuthenticated, (req, res, next) => {
     })
     .catch((error) => {
       console.error('Error while deleting user ===> ', error);
-      res.status(500).send({ error: 'Deleting user failed' });
+      res.status(500).json({ error: 'Deleting user failed' });
     });
 });
 

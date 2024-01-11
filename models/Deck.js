@@ -2,16 +2,19 @@ const { model, Schema, default: mongoose } = require('mongoose');
 
 const deckSchema = new Schema(
     {
+        name: { type: String },
         user: {
             type: mongoose.Types.ObjectId,
             ref: 'User'
         },
-        game: { type: String },
-        name: { type: String },
-        cards: {
+        game: {
             type: mongoose.Types.ObjectId,
-            ref: 'Cards'
-        }
+            ref: 'Game'
+        },
+        cards: [{
+            type: mongoose.Types.ObjectId,
+            ref: 'YugiohCards'
+        }]
     },{
         timestamps: true
     }

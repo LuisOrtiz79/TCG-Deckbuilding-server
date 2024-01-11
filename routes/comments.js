@@ -12,7 +12,7 @@ router.get('/', (req, res, next) => {
         })
         .catch((error) => {
             console.error('Error while retrieving comments ===> ', error);
-            res.status(500).send({ error: 'Failed to retrieve comments' });
+            res.status(500).json({ error: 'Failed to retrieve comments' });
         });
 });
 
@@ -27,7 +27,7 @@ router.get('/:commentId', (req, res, next) => {
         })
         .catch((error) => {
             console.error('Error while retrieving comment ===> ', error);
-            res.status(500).send({ error: 'Failed to retrieve comment' });
+            res.status(500).json({ error: 'Failed to retrieve comment' });
         });
 });
 
@@ -40,11 +40,11 @@ router.post('/', (req, res, next) => {
     })
     .then((createdComment) => {
         console.log('Comment created ===> ', createdComment);
-        res.status(201).send(createdComment);
+        res.status(201).json(createdComment);
     })
     .catch((error) => {
         console.error('Error while creating comment ===> ', error);
-        res.status(500).send({ error: 'Failed to create comment' });
+        res.status(500).json({ error: 'Failed to create comment' });
     });
 });
 
@@ -55,11 +55,11 @@ router.put('/:commentId', (req, res, next) => {
     Comments.findByIdAndUpdate(commentId, req.body, { new: true })
         .then((UpdatedComment) => {
             console.log('Updated Comment ===> ', UpdatedComment);
-            res.status(200).send(UpdatedComment);
+            res.status(200).json(UpdatedComment);
         })
         .catch((error) => {
             console.error('Error while updating comment ===> ', error);
-            res.status(500).send({ error: 'Failed to update comment' });
+            res.status(500).json({ error: 'Failed to update comment' });
         });
 });
 
@@ -74,7 +74,7 @@ router.delete('/:commentId', (req, res, next) => {
         })
         .catch((error) => {
             console.error('Error while deleting comment ===> ', error);
-            res.status(500).send({ error: 'Deleting comment failed' });
+            res.status(500).json({ error: 'Deleting comment failed' });
         });
 });
 

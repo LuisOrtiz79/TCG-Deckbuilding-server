@@ -2,17 +2,20 @@ var express = require('express');
 var router = express.Router();
 
 const Decks = require('../models/Deck');
+const YugiohCards = require('../models/YugiohCards');
 
 // GET decks
 router.get('/', (req, res, next) => {
     Decks.find({})
+        .populate('user')
+        .populate('cards')
         .then((decks) => {
             console.log('Retrieved Decks ===> ', decks);
             res.json(decks);
         })
         .catch((error) => {
             console.error('Error while retrieving decks ===> ', error);
-            res.status(500).send({ error: "Failed to retrieve decks" });
+            res.status(500).json({ error: "Failed to retrieve decks" });
         });
 });
 
@@ -21,13 +24,31 @@ router.get('/:deckId', (req, res, next) => {
     const { deckId } = req.params;
 
     Decks.findById(deckId)
+        .populate('user')
+        .populate('cards')
         .then((deck) => {
             console.log('Retrieved Deck ===> ', deck);
             res.json(deck);
         })
         .catch((error) => {
             console.error('Error while retrieving deck ===> ', error);
-            res.status(500).send({ error: 'Failed to retrieve deck' });
+            res.status(500).json({ error: 'Failed to retrieve deck' });
+        });
+});
+
+// GET cards from the deck by id ===> fix
+router.get('/:deckId/cards', (req, res, next) => {
+    const { deckId } = req.params;
+
+    Decks.findById(deckId)
+        .populate('cards')
+        .then((deck) => {
+            console.log('Retrieved Deck ===> ', deck);
+            res.json(deck);
+        })
+        .catch((error) => {
+            console.error('Error while retrieving deck ===> ', error);
+            res.status(500).json({ error: 'Failed to retrieve deck' });
         });
 });
 
@@ -41,11 +62,11 @@ router.post('/', (req, res, next) => {
     })
     .then((createdDeck) => {
         console.log('Deck created ===> ', createdDeck);
-        res.status(201).send(createdDeck);
+        res.status(201).json(createdDeck);
     })
     .catch((error) => {
         console.error('Error while creating deck ===> ', error);
-        res.status(500).send({ error: 'Failed to create deck' });
+        res.status(500).json({ error: 'Failed to create deck' });
     });
 });
 
@@ -56,11 +77,42 @@ router.put('/:deckId', (req, res, next) => {
     Decks.findByIdAndUpdate(deckId, req.body, { new: true })
         .then((updatedDeck) => {
             console.log('Updated Deck ===> ', updatedDeck);
-            res.status(200).send(updatedDeck);
+            res.status(200).json(updatedDeck);
         })
         .catch((error) => {
             console.error('Error while updatind deck ===> ', error);
-            res.status(500).send({ error: 'Failed to update deck' });
+            res.status(500).json({ error: 'Failed to update deck' });
+        });
+});
+
+// PUT update cards from decks by id
+router.put('/cards/:deckId', (req, res, next) => {
+    const { deckId } = req.params;
+
+    Decks.findByIdAndUpdate(deckId, { $push : req.body}, {new: true, runValidators: true}) // this is used to fix the upper one to get the cards
+    // Decks.findByIdAndUpdate(deckId, { $push :[...cards, { cards: cardId}] } , {new: true, runValidators: true}) 
+        .then((updatedDeck) => {
+            console.log('Updated Deck ===> ', updatedDeck);
+            res.status(200).json(updatedDeck);
+        })
+        .catch((error) => {
+            console.error('Error while updatind deck ===> ', error);
+            res.status(500).json({ error: 'Failed to update deck' });
+        });
+});
+
+// PUT eliminates cards from decks by id
+router.put('/remove/:deckId', (req, res, next) => {
+    const { deckId } = req.params;
+
+    Decks.findByIdAndUpdate(deckId, { $pull : {cards: req.body}}, {new: true, runValidators: true}) 
+        .then((updatedDeck) => {
+            console.log('Updated Deck ===> ', updatedDeck);
+            res.status(200).json(updatedDeck);
+        })
+        .catch((error) => {
+            console.error('Error while updatind deck ===> ', error);
+            res.status(500).json({ error: 'Failed to update deck' });
         });
 });
 
@@ -75,7 +127,7 @@ router.delete('/:deckId', (req, res, next) => {
         })
         .catch((error) => {
             console.error('Error while deleting deck ===> ', error);
-            res.status(500).send({ error: 'Deleting deck failed' });
+            res.status(500).json({ error: 'Deleting deck failed' });
         });
 });
 
