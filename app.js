@@ -7,8 +7,9 @@ var mongoose = require('mongoose');
 
 var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/users');
-var gamesRouter = require('./routes/games');
+// var gamesRouter = require('./routes/games');
 var decksRouter = require('./routes/decks');
+var cardsRouter = require('./routes/yugiohCards');
 var commentsRouter = require('./routes/comments');
 var authRouter = require('./routes/auth');
 
@@ -27,8 +28,9 @@ app.use( cors() );
 
 app.use('/', indexRouter);
 app.use('/users', usersRouter);
-app.use('/games', gamesRouter);
+// app.use('/games', gamesRouter);
 app.use('/decks', decksRouter);
+app.use('/cards', cardsRouter);
 app.use('/comments', commentsRouter);
 app.use('/auth', authRouter);
 

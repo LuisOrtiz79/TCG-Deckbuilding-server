@@ -7,10 +7,7 @@ const deckSchema = new Schema(
             type: mongoose.Types.ObjectId,
             ref: 'User'
         },
-        game: {
-            type: mongoose.Types.ObjectId,
-            ref: 'Game'
-        },
+        game: { type: String },
         cards: [{
             type: mongoose.Types.ObjectId,
             ref: 'YugiohCards'
