@@ -8,7 +8,15 @@ const deckSchema = new Schema(
             ref: 'User'
         },
         game: { type: String },
-        cards: [{
+        main: [{
+            type: mongoose.Types.ObjectId,
+            ref: 'YugiohCards'
+        }],
+        extra: [{
+            type: mongoose.Types.ObjectId,
+            ref: 'YugiohCards'
+        }],
+        side: [{
             type: mongoose.Types.ObjectId,
             ref: 'YugiohCards'
         }]

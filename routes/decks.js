@@ -2,13 +2,33 @@ var express = require('express');
 var router = express.Router();
 
 const Decks = require('../models/Deck');
-const YugiohCards = require('../models/YugiohCards');
+const Cards = require('../models/YugiohCards');
 
 // GET decks
 router.get('/', (req, res, next) => {
-    Decks.find({})
+    const { userId } = req.query;
+
+    Decks.find({ user: userId})
         .populate('user')
-        .populate('cards')
+        .populate('main')
+        .populate('extra')
+        .populate('side')
+        .then((decks) => {
+            console.log('Retrieved Decks ===> ', decks);
+            res.json(decks);
+        })
+        .catch((error) => {
+            console.error('Error while retrieving decks ===> ', error);
+            res.status(500).json({ error: "Failed to retrieve decks" });
+        });
+});
+
+router.get('/all', (req, res, next) => {
+    Decks.find()
+        .populate('user')
+        .populate('main')
+        .populate('extra')
+        .populate('side')
         .then((decks) => {
             console.log('Retrieved Decks ===> ', decks);
             res.json(decks);
@@ -25,7 +45,9 @@ router.get('/:deckId', (req, res, next) => {
 
     Decks.findById(deckId)
         .populate('user')
-        .populate('cards')
+        .populate('main')
+        .populate('extra')
+        .populate('side')
         .then((deck) => {
             console.log('Retrieved Deck ===> ', deck);
             res.json(deck);
@@ -37,11 +59,11 @@ router.get('/:deckId', (req, res, next) => {
 });
 
 // GET cards from the deck by id ===> fix
-router.get('/:deckId/cards', (req, res, next) => {
+router.get('/:deckId/main', (req, res, next) => {
     const { deckId } = req.params;
 
     Decks.findById(deckId)
-        .populate('cards')
+        .populate('main')
         .then((deck) => {
             console.log('Retrieved Deck ===> ', deck);
             res.json(deck);
@@ -58,7 +80,9 @@ router.post('/', (req, res, next) => {
         user: req.body.user,
         game: req.body.game,
         name: req.body.name,
-        cards: req.body.cards
+        main: req.body.main,
+        extra: req.body.extra,
+        side: req.body.side
     })
     .then((createdDeck) => {
         console.log('Deck created ===> ', createdDeck);
@@ -80,38 +104,100 @@ router.put('/:deckId', (req, res, next) => {
             res.status(200).json(updatedDeck);
         })
         .catch((error) => {
-            console.error('Error while updatind deck ===> ', error);
+            console.error('Error while updating deck ===> ', error);
             res.status(500).json({ error: 'Failed to update deck' });
         });
 });
 
 // PUT update cards from decks by id
-router.put('/cards/:deckId', (req, res, next) => {
+router.put('/main/:deckId', (req, res, next) => {
     const { deckId } = req.params;
+    const { cardId } = req.body;
 
-    Decks.findByIdAndUpdate(deckId, { $push : req.body}, {new: true, runValidators: true}) // this is used to fix the upper one to get the cards
+    Decks.findByIdAndUpdate(deckId, { $push: { main: cardId } }, {new: true, runValidators: true}) // this is used to fix the upper one to get the cards
     // Decks.findByIdAndUpdate(deckId, { $push :[...cards, { cards: cardId}] } , {new: true, runValidators: true}) 
         .then((updatedDeck) => {
             console.log('Updated Deck ===> ', updatedDeck);
             res.status(200).json(updatedDeck);
         })
         .catch((error) => {
-            console.error('Error while updatind deck ===> ', error);
+            console.error('Error while updating deck ===> ', error);
             res.status(500).json({ error: 'Failed to update deck' });
         });
 });
 
-// PUT eliminates cards from decks by id
-router.put('/remove/:deckId', (req, res, next) => {
+router.put('/extra/:deckId', (req, res, next) => {
     const { deckId } = req.params;
+    const { cardId } = req.body;
 
-    Decks.findByIdAndUpdate(deckId, { $pull : {cards: req.body}}, {new: true, runValidators: true}) 
+    Decks.findByIdAndUpdate(deckId, { $push: { extra: cardId } }, {new: true, runValidators: true}) 
         .then((updatedDeck) => {
             console.log('Updated Deck ===> ', updatedDeck);
             res.status(200).json(updatedDeck);
         })
         .catch((error) => {
-            console.error('Error while updatind deck ===> ', error);
+            console.error('Error while updating deck ===> ', error);
+            res.status(500).json({ error: 'Failed to update deck' });
+        });
+});
+
+router.put('/side/:deckId', (req, res, next) => {
+    const { deckId } = req.params;
+    const { cardId } = req.body;
+
+    Decks.findByIdAndUpdate(deckId, { $push: { side: cardId } }, {new: true, runValidators: true}) 
+        .then((updatedDeck) => {
+            console.log('Updated Deck ===> ', updatedDeck);
+            res.status(200).json(updatedDeck);
+        })
+        .catch((error) => {
+            console.error('Error while updating deck ===> ', error);
+            res.status(500).json({ error: 'Failed to update deck' });
+        });
+});
+
+// PUT eliminates cards from decks by id Also fix this later
+router.put('/removemain/:deckId', (req, res, next) => {
+    const { deckId } = req.params;
+    const { cardId } = req.body;
+
+    Decks.findByIdAndUpdate(deckId, { $pullAll : {main: cardId}}, {new: true, runValidators: true}) 
+        .then((updatedDeck) => {
+            console.log('Updated Deck ===> ', updatedDeck);
+            res.status(200).json(updatedDeck);
+        })
+        .catch((error) => {
+            console.error('Error while updating deck ===> ', error);
+            res.status(500).json({ error: 'Failed to update deck' });
+        });
+});
+
+router.put('/removeextra/:deckId', (req, res, next) => {
+    const { deckId } = req.params;
+    const { cardId } = req.body;
+
+    Decks.findByIdAndUpdate(deckId, { $pullAll : {extra: cardId}}, {new: true, runValidators: true}) 
+        .then((updatedDeck) => {
+            console.log('Updated Deck ===> ', updatedDeck);
+            res.status(200).json(updatedDeck);
+        })
+        .catch((error) => {
+            console.error('Error while updating deck ===> ', error);
+            res.status(500).json({ error: 'Failed to update deck' });
+        });
+});
+
+router.put('/removeside/:deckId', (req, res, next) => {
+    const { deckId } = req.params;
+    const { cardId } = req.body;
+
+    Decks.findByIdAndUpdate(deckId, { $pull : {side: cardId}}, {new: true, runValidators: true}) 
+        .then((updatedDeck) => {
+            console.log('Updated Deck ===> ', updatedDeck);
+            res.status(200).json(updatedDeck);
+        })
+        .catch((error) => {
+            console.error('Error while updating deck ===> ', error);
             res.status(500).json({ error: 'Failed to update deck' });
         });
 });
