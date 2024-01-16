@@ -2,10 +2,26 @@ var express = require('express');
 var router = express.Router();
 
 const Decks = require('../models/Deck');
-const Cards = require('../models/YugiohCards');
 
-// GET decks
+// GET all decks
 router.get('/', (req, res, next) => {
+    Decks.find()
+        .populate('user')
+        .populate('main')
+        .populate('extra')
+        .populate('side')
+        .then((decks) => {
+            console.log('Retrieved Decks ===> ', decks);
+            res.json(decks);
+        })
+        .catch((error) => {
+            console.error('Error while retrieving decks ===> ', error);
+            res.status(500).json({ error: "Failed to retrieve decks" });
+        });
+});
+
+// Get all decks based on user id
+router.get('/user', (req, res, next) => {
     const { userId } = req.query;
 
     Decks.find({ user: userId})
@@ -23,23 +39,7 @@ router.get('/', (req, res, next) => {
         });
 });
 
-router.get('/all', (req, res, next) => {
-    Decks.find()
-        .populate('user')
-        .populate('main')
-        .populate('extra')
-        .populate('side')
-        .then((decks) => {
-            console.log('Retrieved Decks ===> ', decks);
-            res.json(decks);
-        })
-        .catch((error) => {
-            console.error('Error while retrieving decks ===> ', error);
-            res.status(500).json({ error: "Failed to retrieve decks" });
-        });
-});
-
-// GET decks by id
+// GET decks by its id
 router.get('/:deckId', (req, res, next) => {
     const { deckId } = req.params;
 
@@ -58,23 +58,7 @@ router.get('/:deckId', (req, res, next) => {
         });
 });
 
-// GET cards from the deck by id ===> fix
-router.get('/:deckId/main', (req, res, next) => {
-    const { deckId } = req.params;
-
-    Decks.findById(deckId)
-        .populate('main')
-        .then((deck) => {
-            console.log('Retrieved Deck ===> ', deck);
-            res.json(deck);
-        })
-        .catch((error) => {
-            console.error('Error while retrieving deck ===> ', error);
-            res.status(500).json({ error: 'Failed to retrieve deck' });
-        });
-});
-
-// POST create new decks
+// POST create a new deck
 router.post('/', (req, res, next) => {
     Decks.create({
         user: req.body.user,
@@ -94,7 +78,7 @@ router.post('/', (req, res, next) => {
     });
 });
 
-// PUT update decks by id
+// PUT update the deck by its id
 router.put('/:deckId', (req, res, next) => {
     const { deckId } = req.params;
 
@@ -109,12 +93,13 @@ router.put('/:deckId', (req, res, next) => {
         });
 });
 
-// PUT update cards from decks by id
+// PUT update main cards in the deck by its id
 router.put('/main/:deckId', (req, res, next) => {
     const { deckId } = req.params;
     const { cardId } = req.body;
 
-    Decks.findByIdAndUpdate(deckId, { $push: { main: cardId } }, {new: true, runValidators: true}) // this is used to fix the upper one to get the cards
+    Decks.findByIdAndUpdate(deckId, { $push: { main: cardId } }, {new: true, runValidators: true})
+    // Check to see if it can be fixed a bit more
     // Decks.findByIdAndUpdate(deckId, { $push :[...cards, { cards: cardId}] } , {new: true, runValidators: true}) 
         .then((updatedDeck) => {
             console.log('Updated Deck ===> ', updatedDeck);
@@ -126,6 +111,7 @@ router.put('/main/:deckId', (req, res, next) => {
         });
 });
 
+// PUT update extra cards in the deck by its id
 router.put('/extra/:deckId', (req, res, next) => {
     const { deckId } = req.params;
     const { cardId } = req.body;
@@ -141,6 +127,7 @@ router.put('/extra/:deckId', (req, res, next) => {
         });
 });
 
+// PUT update side cards in the deck by its id
 router.put('/side/:deckId', (req, res, next) => {
     const { deckId } = req.params;
     const { cardId } = req.body;
@@ -156,12 +143,12 @@ router.put('/side/:deckId', (req, res, next) => {
         });
 });
 
-// PUT eliminates cards from decks by id Also fix this later
+// PUT eliminates cards in the main deck by its id. Also fix this later
 router.put('/removemain/:deckId', (req, res, next) => {
     const { deckId } = req.params;
     const { cardId } = req.body;
 
-    Decks.findByIdAndUpdate(deckId, { $pullAll : {main: cardId}}, {new: true, runValidators: true}) 
+    Decks.findByIdAndUpdate(deckId, { $pull: {main: cardId}}, {new: true, runValidators: true}) 
         .then((updatedDeck) => {
             console.log('Updated Deck ===> ', updatedDeck);
             res.status(200).json(updatedDeck);
@@ -172,11 +159,12 @@ router.put('/removemain/:deckId', (req, res, next) => {
         });
 });
 
+// PUT eliminates cards in the extra deck by its id. Also fix this later
 router.put('/removeextra/:deckId', (req, res, next) => {
     const { deckId } = req.params;
     const { cardId } = req.body;
 
-    Decks.findByIdAndUpdate(deckId, { $pullAll : {extra: cardId}}, {new: true, runValidators: true}) 
+    Decks.findByIdAndUpdate(deckId, { $pull: {extra: cardId}}, {new: true, runValidators: true}) 
         .then((updatedDeck) => {
             console.log('Updated Deck ===> ', updatedDeck);
             res.status(200).json(updatedDeck);
@@ -187,11 +175,12 @@ router.put('/removeextra/:deckId', (req, res, next) => {
         });
 });
 
+// PUT eliminates cards in the side deck by its id. Also fix this later
 router.put('/removeside/:deckId', (req, res, next) => {
     const { deckId } = req.params;
     const { cardId } = req.body;
 
-    Decks.findByIdAndUpdate(deckId, { $pull : {side: cardId}}, {new: true, runValidators: true}) 
+    Decks.findByIdAndUpdate(deckId, { $pull: {side: cardId}}, {new: true, runValidators: true}) 
         .then((updatedDeck) => {
             console.log('Updated Deck ===> ', updatedDeck);
             res.status(200).json(updatedDeck);
@@ -202,7 +191,7 @@ router.put('/removeside/:deckId', (req, res, next) => {
         });
 });
 
-// DELETE decks by id
+// DELETE deck by its id
 router.delete('/:deckId', (req, res, next) => {
     const { deckId } = req.params;
 

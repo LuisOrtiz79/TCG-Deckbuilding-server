@@ -30,6 +30,6 @@ const YugiohCardsSchema = new Schema(
             coolstuffinc_price: { type: String }
         }]
     }
-)
+);
 
 module.exports = model('YugiohCards', YugiohCardsSchema);

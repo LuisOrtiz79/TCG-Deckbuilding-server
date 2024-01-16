@@ -5,7 +5,7 @@ const User = require('../models/User');
 
 const isAuthenticated = require('../middleware/isAuthenticated');
 
-// GET user by id
+// GET user by its id
 router.get('/:userId', isAuthenticated, (req, res, next) => {
   const { userId } = req.params;
 
@@ -20,7 +20,7 @@ router.get('/:userId', isAuthenticated, (req, res, next) => {
     });
 });
 
-// PUT update user by id
+// PUT update user by its id
 router.put('/:userId', isAuthenticated, (req, res, next) => {
   const { userId } = req.params;
 
@@ -35,7 +35,7 @@ router.put('/:userId', isAuthenticated, (req, res, next) => {
     });
 });
 
-// DELETE user by id
+// DELETE user by its id
 router.delete('/:userId', isAuthenticated, (req, res, next) => {
   const { userId } = req.params;
 

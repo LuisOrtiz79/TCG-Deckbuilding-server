@@ -5,9 +5,8 @@ var logger = require('morgan');
 var cors = require('cors');
 var mongoose = require('mongoose');
 
-var indexRouter = require('./routes/index');
+// var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/users');
-// var gamesRouter = require('./routes/games');
 var decksRouter = require('./routes/decks');
 var cardsRouter = require('./routes/yugiohCards');
 var commentsRouter = require('./routes/comments');
@@ -26,9 +25,8 @@ app.enable('trust proxy');
 
 app.use( cors() );
 
-app.use('/', indexRouter);
+// app.use('/', indexRouter);
 app.use('/users', usersRouter);
-// app.use('/games', gamesRouter);
 app.use('/decks', decksRouter);
 app.use('/cards', cardsRouter);
 app.use('/comments', commentsRouter);

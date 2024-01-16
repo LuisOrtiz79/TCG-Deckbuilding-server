@@ -3,7 +3,7 @@ var router = express.Router();
 
 const YugiohCards = require('../models/YugiohCards');
 
-// GET cards
+// GET all cards
 router.get('/', (req, res, next) => {
     YugiohCards.find({})
         .then((cards) => {
@@ -16,7 +16,7 @@ router.get('/', (req, res, next) => {
         });
 });
 
-// GET cards by id
+// GET cards by its id
 router.get('/:cardId', (req, res, next) => {
     const { cardId } = req.params;
 
