@@ -2,13 +2,16 @@ var express = require('express');
 var router = express.Router();
 
 const Comments = require('../models/Comments');
+const isAuthenticated = require('../middleware/isAuthenticated');
 
 // GET comments
-router.get('/', (req, res, next) => {
+router.get('/', isAuthenticated, (req, res, next) => {
     Comments.find({})
+        .populate('user')
+        .populate('deck')
         .then((comments) => {
             console.log('Retrieved Comments ===> ', comments);
-            res.json(cohorts);
+            res.json(comments);
         })
         .catch((error) => {
             console.error('Error while retrieving comments ===> ', error);
@@ -17,10 +20,12 @@ router.get('/', (req, res, next) => {
 });
 
 // GET comment by id
-router.get('/:commentId', (req, res, next) => {
+router.get('/:commentId', isAuthenticated, (req, res, next) => {
     const { commentId } = req.params;
 
     Comments.findById(commentId)
+        .populate('user')
+        .populate('deck')
         .then((comment) => {
             console.log('Retrieved Comment ===> ', comment);
             res.json(comment);
@@ -32,7 +37,7 @@ router.get('/:commentId', (req, res, next) => {
 });
 
 // POST new comments
-router.post('/', (req, res, next) => {
+router.post('/', isAuthenticated, (req, res, next) => {
     Comments.create({
         user: req.body.user,
         deck: req.body.deck,
@@ -49,7 +54,7 @@ router.post('/', (req, res, next) => {
 });
 
 // PUT update comment by id
-router.put('/:commentId', (req, res, next) => {
+router.put('/:commentId', isAuthenticated, (req, res, next) => {
     const { commentId } = req.params;
 
     Comments.findByIdAndUpdate(commentId, req.body, { new: true })
@@ -64,7 +69,7 @@ router.put('/:commentId', (req, res, next) => {
 });
 
 // DELETE comment by id
-router.delete('/:commentId', (req, res, next) => {
+router.delete('/:commentId', isAuthenticated, (req, res, next) => {
     const { commentId } = req.params;
 
     Comments.findByIdAndDelete(commentId)

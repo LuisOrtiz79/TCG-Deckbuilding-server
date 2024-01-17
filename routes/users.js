@@ -2,7 +2,6 @@ var express = require('express');
 var router = express.Router();
 
 const User = require('../models/User');
-
 const isAuthenticated = require('../middleware/isAuthenticated');
 
 // GET user by its id

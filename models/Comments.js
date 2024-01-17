@@ -10,7 +10,7 @@ const commentsSchema = new Schema(
             type: mongoose.Types.ObjectId,
             ref: 'Deck'
         },
-        comments: { types: String }
+        comments: { type: String }
     },{
         timestamps: true
     }
