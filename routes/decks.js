@@ -24,7 +24,7 @@ router.get('/', (req, res, next) => {
 router.get('/user', (req, res, next) => {
     const { userId } = req.query;
 
-    Decks.find({ user: userId})
+    Decks.find({ user: userId })
         .populate('user')
         .populate('main')
         .populate('extra')
