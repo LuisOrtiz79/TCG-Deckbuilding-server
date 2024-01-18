@@ -16,6 +16,22 @@ router.get('/', (req, res, next) => {
         });
 });
 
+router.get('/new/:skip/:limit', (req, res, next) => {
+    const { skip, limit } = req.params; 
+
+    YugiohCards.find({})
+        .skip(skip)
+        .limit(limit)
+        .then((cards) => {
+            console.log('Retrieved YugiohCards ===> ', cards);
+            res.json(cards);
+        })
+        .catch((error) => {
+            console.error('Error while retrieving yugioh cards ===> ', error);
+            res.status(500).json({ error: "Failed to retrieve yugioh cards" });
+        });
+});
+
 // GET cards by its id
 router.get('/:cardId', (req, res, next) => {
     const { cardId } = req.params;
