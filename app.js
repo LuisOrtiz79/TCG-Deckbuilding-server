@@ -23,7 +23,10 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.set('trust proxy', 1);
 app.enable('trust proxy');
 
-app.use( cors() );
+app.use( cors({
+    origin: [process.env.REACT_APP_URI]
+  })
+);
 
 // app.use('/', indexRouter);
 app.use('/users', usersRouter);
