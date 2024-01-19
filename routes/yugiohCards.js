@@ -16,6 +16,7 @@ router.get('/', (req, res, next) => {
         });
 });
 
+// Get a limit amount of cards as not to overload the server
 router.get('/new/:skip/:limit', (req, res, next) => {
     const { skip, limit } = req.params; 
 
@@ -32,6 +33,7 @@ router.get('/new/:skip/:limit', (req, res, next) => {
         });
 });
 
+// Get the cards that matchs the name
 router.get('/search/:name', (req, res, next) => {
     const { name } = req.params;
     
